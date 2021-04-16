@@ -1,0 +1,31 @@
+import Vue from 'vue'
+import VueRouter from 'vue-router'
+
+import PageLogin from '@/components/pages/PageLogin.vue'
+import PageNotFound from '@/components/pages/PageNotFound.vue'
+import PageHome from '@/components/pages/PageHome.vue'
+import PageSurveyList from '@/components/pages/PageSurveyList.vue'
+import PageSurvey from '@/components/pages/PageSurvey.vue'
+
+Vue.use(VueRouter)
+
+const routes = [
+  {
+    path: '/',
+    component: PageHome,
+    children: [
+      { path: '/', name: 'PageSurveyList', component: PageSurveyList },
+      { path: '/survey', name: 'PageSurvey', component: PageSurvey }
+    ]
+  },
+  { path: '/login', name: 'PageLogin', component: PageLogin },
+  { path: '*', name: 'PageNotFound', component: PageNotFound }
+]
+
+const router = new VueRouter({
+  mode: 'history',
+  base: process.env.BASE_URL,
+  routes
+})
+
+export default router;
