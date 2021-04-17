@@ -17,12 +17,13 @@
             expanded
             v-model="questionType"
           >
-              <option
-                  v-for="questionType in questionTypes"
-                  :value="questionType.code"
-                  :key="questionType.code">
-                  {{ questionType.title }}
-              </option>
+            <option
+              v-for="questionType in questionTypes"
+              :value="questionType.code"
+              :key="questionType.code"
+            >
+              {{ questionType.title }}
+            </option>
           </b-select>
         </b-field>
       </div>
@@ -42,7 +43,12 @@
     </div>
 
     <div v-if="isQuestionTypeNeedsMoreOptions" class="columns">
-      <div class="column"></div>
+      <div class="column">
+        <component
+          :is="questionTypeComponent"
+          @on-change-mcq-options="onChangeMCQOptions"
+          @on-change-checkboxes-options="onChangeCheckboxesOptions"></component>
+      </div>
     </div>
 
     <div class="columns">
@@ -50,7 +56,7 @@
         <b-button
           type="is-success"
           size="is-small"
-          @click="emitAddQuestion"
+          @click="emitAddQuestionData"
         >
           Add this question
         </b-button>
@@ -65,12 +71,22 @@
         </b-button>
       </div>
     </div>
-    <!-- {{ [questionTitle, questionType, isRequired] }} -->
+    {{ [questionTitle, questionType, isRequired, questionConfig] }}
   </section>
 </template>
 
 <script>
+import SurveyAddQuestionMultipleChoice from '@/components/survey/SurveyAddQuestionMultipleChoice.vue'
+import SurveyAddQuestionCheckboxes from '@/components/survey/SurveyAddQuestionCheckboxes.vue'
+import SurveyAddQuestionDropdown from '@/components/survey/SurveyAddQuestionDropdown.vue'
+
 export default {
+  components: {
+    SurveyAddQuestionMultipleChoice,
+    SurveyAddQuestionCheckboxes,
+    SurveyAddQuestionDropdown
+  },
+
   data() {
     return {
       questionTypes: [
@@ -96,17 +112,43 @@ export default {
         'CHECK',
         'DROPD'
       ].includes(this.questionType) 
+    },
+
+    questionTypeComponent() {
+      switch (this.questionType) {
+        case 'MULTI':
+          return 'SurveyAddQuestionMultipleChoice'
+        case 'CHECK':
+          return 'SurveyAddQuestionCheckboxes'
+        case 'DROPD':
+          return 'SurveyAddQuestionDropdown'
+      }
+      return null
     }
   },
 
   methods: {
-    emitAddQuestion() {
+    onChangeMCQOptions(mcqConfig) {
+      this.questionConfig = mcqConfig
+    },
+
+    onChangeCheckboxesOptions(checkboxesConfig) {
+      this.questionConfig = checkboxesConfig
+    },
+
+    emitAddQuestionData() {
       this.$emit('on-click-add-question', {
         questionTitle: this.questionTitle,
         questionType: this.questionType,
         isRequired: this.isRequired,
         questionConfig: this.questionConfig
       })
+    },
+  },
+
+  watch: {
+    questionType() {
+      this.questionConfig = {}
     }
   }
 }

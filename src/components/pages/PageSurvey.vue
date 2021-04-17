@@ -3,7 +3,7 @@
     <div class="columns">
       <SurveyMenu />
 
-      <div class="column is-four-fifths" style="background: #fff; height: 100vh; padding: 24px;">
+      <div class="column is-four-fifths" style="background: #fff; min-height: 100vh; padding: 24px;">
         <section>
           <div class="title can-edit" contenteditable="true">
             Untitled Survey
@@ -30,6 +30,11 @@
             @on-click-add-question="addQuestion"
           />
         </div>
+
+        <div>
+          QUESTIONS: <br>
+          {{ questions }}
+        </div>
       </div>
     </div>
   </div>
@@ -47,12 +52,15 @@ export default {
   },
   data() {
     return {
-      isAddQuestionFormLoaded: false
+      isAddQuestionFormLoaded: false,
+      questions: []
     }
   },
   methods: {
-    addQuestion(questionObject) {
-      console.log('new question', questionObject)
+    addQuestion(newQuestion) {
+      this.isAddQuestionFormLoaded = false,
+      this.questions.push(newQuestion)
+
     }
   }
 }

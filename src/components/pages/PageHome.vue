@@ -1,7 +1,7 @@
 <template>
   <div style="background: #efefef">
     <BaseHeader />
-    <div class="container is-max-desktop">
+    <div class="container is-max-desktop" style="height: auto;">
       <router-view />
     </div> 
     <BaseFooter />
