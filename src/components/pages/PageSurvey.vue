@@ -33,7 +33,14 @@
 
         <div>
           QUESTIONS: <br>
-          {{ questions }}
+          <SurveyQuestionItem
+            v-for="question in questions"
+            :key="question.id"
+            :question-title="question.questionTitle"
+            :question-type="question.questionType"
+            :is-required="question.isRequired"
+            :question-config="question.questionConfig"
+          />
         </div>
       </div>
     </div>
@@ -44,11 +51,13 @@
 <script>
 import SurveyMenu from '@/components/survey/SurveyMenu.vue'
 import SurveyAddQuestion from '@/components/survey/SurveyAddQuestion.vue'
+import SurveyQuestionItem from '@/components/survey/SurveyQuestionItem.vue'
 
 export default {
   components: {
     SurveyAddQuestion,
-    SurveyMenu
+    SurveyMenu,
+    SurveyQuestionItem
   },
   data() {
     return {

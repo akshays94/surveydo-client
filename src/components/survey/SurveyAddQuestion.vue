@@ -47,7 +47,9 @@
         <component
           :is="questionTypeComponent"
           @on-change-mcq-options="onChangeMCQOptions"
-          @on-change-checkboxes-options="onChangeCheckboxesOptions"></component>
+          @on-change-checkboxes-options="onChangeCheckboxesOptions"
+          @on-change-dropdown-options="onChangeDropdownOptions"
+        ></component>
       </div>
     </div>
 
@@ -71,7 +73,7 @@
         </b-button>
       </div>
     </div>
-    {{ [questionTitle, questionType, isRequired, questionConfig] }}
+    <!-- {{ [questionTitle, questionType, isRequired, questionConfig] }} -->
   </section>
 </template>
 
@@ -134,6 +136,10 @@ export default {
 
     onChangeCheckboxesOptions(checkboxesConfig) {
       this.questionConfig = checkboxesConfig
+    },
+
+    onChangeDropdownOptions(dropdownConfig) {
+      this.questionConfig = dropdownConfig
     },
 
     emitAddQuestionData() {
