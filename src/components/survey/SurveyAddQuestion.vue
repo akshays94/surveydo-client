@@ -1,5 +1,5 @@
 <template>
-  <section style="border: 1px solid lightgray; padding: 18px;">
+  <section style="border: 1px solid lightgray; padding: 18px; margin-bottom: 24px;">
     <div class="columns">
       <div class="column is-8">
         <b-field label="Question">
@@ -73,7 +73,7 @@
         </b-button>
       </div>
     </div>
-    {{ [questionTitle, questionType, isRequired, questionConfig] }}
+    <!-- {{ [questionTitle, questionType, isRequired, questionConfig] }} -->
   </section>
 </template>
 
@@ -93,6 +93,10 @@ export default {
     isUpdating: {
       type: Boolean,
       default: false
+    },
+    updateQuestionIndex: {
+      type: Number,
+      required: false
     },
     updateQuestionTitle: {
       type: String,
@@ -176,10 +180,14 @@ export default {
 
     emitAddQuestionData() {
       this.$emit('on-click-add-question', {
-        questionTitle: this.questionTitle,
-        questionType: this.questionType,
-        isRequired: this.isRequired,
-        questionConfig: this.questionConfig
+        action: this.isUpdating ? 'UPDATE' : 'ADD',
+        questionData: {
+          questionTitle: this.questionTitle,
+          questionType: this.questionType,
+          isRequired: this.isRequired,
+          questionConfig: this.questionConfig
+        },
+        questionIndex: this.updateQuestionIndex
       })
     },
   },

@@ -13,7 +13,7 @@
             Add a description ...
           </div>
 
-          <b-button
+          <!-- <b-button
             type="is-dark"
             size="is-small"
             style="margin: 24px 0;"
@@ -21,18 +21,21 @@
             @click="isAddQuestionFormLoaded = true"
           >
             Add question
-          </b-button>
+          </b-button> -->
         </section>
 
-        <div v-if="isAddQuestionFormLoaded">
+        <!-- <div v-if="isAddQuestionFormLoaded">
           <SurveyAddQuestion
             @on-click-discard-this-question="isAddQuestionFormLoaded = false"
-            @on-click-add-question="addQuestion"
+            @on-click-add-question="addUpdateQuestion"
           />
-        </div>
+        </div> -->
 
         <div>
-          QUESTIONS: <br> {{ questions }}
+          <div style="font-size: 1.25em; margin-bottom: 24px;">
+            Questions ({{ questions.length }})
+          </div>
+
           <div
             v-for="(question, index) in questions"
             :key="question.id"
@@ -40,12 +43,13 @@
             <SurveyAddQuestion
               v-if="question.isUpdating"
               :is-updating="true"
+              :update-question-index="index"
               :update-question-title="question.questionTitle"
               :update-question-type="question.questionType"
               :update-is-required="question.isRequired"
               :update-question-config="question.questionConfig"
               @on-click-discard-this-question="isAddQuestionFormLoaded = false"
-              @on-click-add-question="addQuestion"
+              @on-click-add-question="addUpdateQuestion"
             />
 
             <SurveyQuestionItem
@@ -55,8 +59,22 @@
               :question-type="question.questionType"
               :is-required="question.isRequired"
               :question-config="question.questionConfig"
-              @on-click-update-question="updateQuestion"
+              @on-click-update-question="showUpdateQuestionForm"
             />
+          </div>
+
+          <div v-if="isAddQuestionFormLoaded">
+            <SurveyAddQuestion
+              @on-click-discard-this-question="isAddQuestionFormLoaded = false"
+              @on-click-add-question="addUpdateQuestion"
+            />
+          </div>
+          <div
+            v-else
+            class="add-new-question-button"
+            @click="isAddQuestionFormLoaded = true"
+          >
+            + Add a new question
           </div>
         </div>
       </div>
@@ -66,6 +84,8 @@
 </template>
 
 <script>
+import Vue from 'vue'
+
 import SurveyMenu from '@/components/survey/SurveyMenu.vue'
 import SurveyAddQuestion from '@/components/survey/SurveyAddQuestion.vue'
 import SurveyQuestionItem from '@/components/survey/SurveyQuestionItem.vue'
@@ -83,13 +103,25 @@ export default {
     }
   },
   methods: {
-    addQuestion(newQuestion) {
-      this.isAddQuestionFormLoaded = false
-      newQuestion.isUpdating = false
-      this.questions.push(newQuestion)
+    addUpdateQuestion(payload) {
+      let questionData = payload.questionData
+      let questionIndex = payload.questionIndex
+
+      switch (payload.action) {
+        case 'ADD':
+          this.isAddQuestionFormLoaded = false
+          questionData.isUpdating = false
+          this.questions.push(questionData)
+          break
+
+        case 'UPDATE':
+          questionData.isUpdating = false
+          Vue.set(this.questions, questionIndex, questionData)
+          break
+      }
     },
 
-    updateQuestion(questionIndex) {
+    showUpdateQuestionForm(questionIndex) {
       this.questions[questionIndex]['isUpdating'] = true
     }
   }
@@ -101,6 +133,15 @@ export default {
   font-size: 2em;
   font-weight: lighter;
   /* margin-bottom: 12px; */
+}
+
+.add-new-question-button {
+  border: 1px solid gray;
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
 }
 
 .can-edit:hover {

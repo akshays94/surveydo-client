@@ -1,5 +1,24 @@
 <template>
   <section class="item-box">
+    <div class="item-box-actions">
+      <div @click="$emit('on-click-update-question', questionIndex)">
+        <b-icon
+          class="item-box-actions--item"
+          icon="pencil-alt"
+          size="is-small"
+          >
+        </b-icon>
+      </div>
+
+      <div>
+        <b-icon
+          class="item-box-actions--item"
+          icon="trash-alt"
+          size="is-small">
+        </b-icon>
+      </div>
+    </div>
+
     <div class="item-box--title">
       {{ questionTitle }} <span v-if="isRequired" class="is-required">*</span>
     </div>
@@ -68,7 +87,7 @@
           :show-week-number="false"
           :locale="undefined"
           placeholder="Click to select..."
-          icon="calendar-today"
+          icon="calendar-plus"
           trap-focus>
         </b-datepicker>
       </div>
@@ -78,11 +97,11 @@
       </div>
     </div>
 
-    <b-button
+    <!-- <b-button
       type="is-danger is-light"
       size="is-small"
       @click="$emit('on-click-update-question', questionIndex)"
-    >Update</b-button>
+    >Update</b-button> -->
   </section>
 </template>
 
@@ -123,9 +142,27 @@ export default {
 
 <style scoped>
 .item-box {
-  border: 1px solid black;
-  padding: 24px;
+  border: 1px solid lightgray;
+  padding: 24px 24px 24px 24px;
   margin-bottom: 24px;
+  position: relative;
+}
+
+.item-box-actions {
+  position: absolute;
+  display: flex;
+  top: 24px;
+  right: 24px;
+}
+
+.item-box-actions--item {
+  color: lightgray;
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.item-box-actions--item:hover {
+  color: gray;
 }
 
 .item-box--title {
