@@ -77,12 +77,22 @@
 
       </div>
     </div>
+
+    <b-button
+      type="is-danger is-light"
+      size="is-small"
+      @click="$emit('on-click-update-question', questionIndex)"
+    >Update</b-button>
   </section>
 </template>
 
 <script>
 export default {
   props: {
+    questionIndex: {
+      type: Number,
+      required: true
+    },
     questionTitle: {
       type: String,
       required: true

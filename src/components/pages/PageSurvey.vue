@@ -32,15 +32,32 @@
         </div>
 
         <div>
-          QUESTIONS: <br>
-          <SurveyQuestionItem
-            v-for="question in questions"
+          QUESTIONS: <br> {{ questions }}
+          <div
+            v-for="(question, index) in questions"
             :key="question.id"
-            :question-title="question.questionTitle"
-            :question-type="question.questionType"
-            :is-required="question.isRequired"
-            :question-config="question.questionConfig"
-          />
+          >
+            <SurveyAddQuestion
+              v-if="question.isUpdating"
+              :is-updating="true"
+              :update-question-title="question.questionTitle"
+              :update-question-type="question.questionType"
+              :update-is-required="question.isRequired"
+              :update-question-config="question.questionConfig"
+              @on-click-discard-this-question="isAddQuestionFormLoaded = false"
+              @on-click-add-question="addQuestion"
+            />
+
+            <SurveyQuestionItem
+              v-else
+              :question-index="index"
+              :question-title="question.questionTitle"
+              :question-type="question.questionType"
+              :is-required="question.isRequired"
+              :question-config="question.questionConfig"
+              @on-click-update-question="updateQuestion"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -67,9 +84,13 @@ export default {
   },
   methods: {
     addQuestion(newQuestion) {
-      this.isAddQuestionFormLoaded = false,
+      this.isAddQuestionFormLoaded = false
+      newQuestion.isUpdating = false
       this.questions.push(newQuestion)
+    },
 
+    updateQuestion(questionIndex) {
+      this.questions[questionIndex]['isUpdating'] = true
     }
   }
 }

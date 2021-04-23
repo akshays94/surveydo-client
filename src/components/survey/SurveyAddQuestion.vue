@@ -60,7 +60,7 @@
           size="is-small"
           @click="emitAddQuestionData"
         >
-          Add this question
+          {{ isUpdating ? 'Update' : 'Add' }} this question
         </b-button>
 
         <b-button
@@ -69,11 +69,11 @@
           style="margin-left: 12px;"
           @click="$emit('on-click-discard-this-question')"
         >
-          Discard this question
+          {{ isUpdating ? 'Cancel' : 'Discard' }}
         </b-button>
       </div>
     </div>
-    <!-- {{ [questionTitle, questionType, isRequired, questionConfig] }} -->
+    {{ [questionTitle, questionType, isRequired, questionConfig] }}
   </section>
 </template>
 
@@ -87,6 +87,29 @@ export default {
     SurveyAddQuestionMultipleChoice,
     SurveyAddQuestionCheckboxes,
     SurveyAddQuestionDropdown
+  },
+
+  props: {
+    isUpdating: {
+      type: Boolean,
+      default: false
+    },
+    updateQuestionTitle: {
+      type: String,
+      required: false
+    },
+    updateQuestionType: {
+      type: String,
+      required: false
+    },
+    updateIsRequired: {
+      type: Boolean,
+      required: false
+    },
+    updateQuestionConfig: {
+      type: Object,
+      required: false
+    }
   },
 
   data() {
@@ -104,6 +127,15 @@ export default {
       questionType: 'SHORT',
       isRequired: true,
       questionConfig: {}
+    }
+  },
+
+  created() {
+    if (this.isUpdating) {
+      this.questionTitle = this.updateQuestionTitle
+      this.questionType = this.updateQuestionType
+      this.isRequired = this.updateIsRequired
+      this.questionConfig = this.updateQuestionConfig
     }
   },
 
