@@ -29,7 +29,7 @@
           <b-switch
             type="is-success"
             v-model="isAddOther"
-            @input="emitMCQOptions"
+            @input="emitCheckboxesOptions"
           >
             Add Other
           </b-switch>
@@ -49,6 +49,17 @@
 
 <script>
 export default {
+  props: {
+    isUpdating: {
+      type: Boolean,
+      required: false
+    },
+    questionConfig: {
+      type: Object,
+      required: false
+    }
+  },
+
   data() {
     return {
       isAddOther: false,
@@ -65,7 +76,18 @@ export default {
   },
 
   created() {
-    this.emitMCQOptions()
+    if (this.isUpdating) {
+      if (Object.keys(this.questionConfig).length > 0) {
+        this.isAddOther = this.questionConfig.isAddOther
+        this.options = this.questionConfig.options
+      } else {
+        this.isAddOther = false
+        this.options = [
+          { id: 1, order: 1, title: 'Option 1' }
+        ]
+      }
+    }
+    this.emitCheckboxesOptions()
   },
 
   methods: {
@@ -78,12 +100,12 @@ export default {
         order: newOrder,
         title: `Option ${newOrder}`
       })
-      this.emitMCQOptions()
+      this.emitCheckboxesOptions()
     },
 
     onChangeOptionTitle(newOptionTitle, optionIndex) {
       this.options[optionIndex].title = newOptionTitle
-      this.emitMCQOptions()
+      this.emitCheckboxesOptions()
     },
 
     updateOrderValues() {
@@ -96,10 +118,10 @@ export default {
     removeOption(optionIndex) {
       this.options.splice(optionIndex, 1)
       this.updateOrderValues()
-      this.emitMCQOptions()
+      this.emitCheckboxesOptions()
     },
 
-    emitMCQOptions() {
+    emitCheckboxesOptions() {
       this.$emit('on-change-checkboxes-options', {
         options: this.options,
         isAddOther: this.isAddOther

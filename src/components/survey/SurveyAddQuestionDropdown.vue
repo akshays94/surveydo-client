@@ -35,6 +35,17 @@
 
 <script>
 export default {
+  props: {
+    isUpdating: {
+      type: Boolean,
+      required: false
+    },
+    questionConfig: {
+      type: Object,
+      required: false
+    }
+  },
+
   data() {
     return {
       options: [
@@ -50,6 +61,15 @@ export default {
   },
 
   created() {
+    if (this.isUpdating) {
+      if (Object.keys(this.questionConfig).length > 0) {
+        this.options = this.questionConfig.options
+      } else {
+        this.options = [
+          { id: 1, order: 1, title: 'Option 1' }
+        ]
+      }
+    }
     this.emitDropdownOptions()
   },
 

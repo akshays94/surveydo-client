@@ -2,10 +2,14 @@
   <section style="border: 1px solid lightgray; padding: 18px; margin-bottom: 24px;">
     <div class="columns">
       <div class="column is-8">
-        <b-field label="Question">
+        <b-field
+          label="Question"
+          :type="validationQuestionTitle.type"
+          :message="validationQuestionTitle.message">
           <b-input
             placeholder="Question"
             v-model="questionTitle"
+            @input="onChangeQuestionTitle"
           ></b-input>
         </b-field>
       </div>
@@ -46,6 +50,8 @@
       <div class="column">
         <component
           :is="questionTypeComponent"
+          :is-updating="isUpdating"
+          :question-config="questionConfig"
           @on-change-mcq-options="onChangeMCQOptions"
           @on-change-checkboxes-options="onChangeCheckboxesOptions"
           @on-change-dropdown-options="onChangeDropdownOptions"
@@ -67,7 +73,7 @@
           type="is-danger is-light"
           size="is-small"
           style="margin-left: 12px;"
-          @click="$emit('on-click-discard-this-question')"
+          @click="onClickCancelButton"
         >
           {{ isUpdating ? 'Cancel' : 'Discard' }}
         </b-button>
@@ -130,7 +136,12 @@ export default {
       questionTitle: '',
       questionType: 'SHORT',
       isRequired: true,
-      questionConfig: {}
+      questionConfig: {},
+
+      validationQuestionTitle: {
+        type: '',
+        message: ''
+      }
     }
   },
 
@@ -153,11 +164,13 @@ export default {
     },
 
     questionTypeComponent() {
-      switch (this.questionType) {
+      switch (this.questionType) {        
         case 'MULTI':
           return 'SurveyAddQuestionMultipleChoice'
+        
         case 'CHECK':
           return 'SurveyAddQuestionCheckboxes'
+        
         case 'DROPD':
           return 'SurveyAddQuestionDropdown'
       }
@@ -178,23 +191,53 @@ export default {
       this.questionConfig = dropdownConfig
     },
 
-    emitAddQuestionData() {
-      this.$emit('on-click-add-question', {
-        action: this.isUpdating ? 'UPDATE' : 'ADD',
-        questionData: {
-          questionTitle: this.questionTitle,
-          questionType: this.questionType,
-          isRequired: this.isRequired,
-          questionConfig: this.questionConfig
-        },
-        questionIndex: this.updateQuestionIndex
-      })
+    onChangeQuestionTitle() {
+      const validTitleLength = this.questionTitle.trim().length > 0
+      if (validTitleLength) {
+        this.validationQuestionTitle = {
+          type: '',
+          message: ''
+        }
+      }
     },
+
+    emitAddQuestionData() {
+      const invalidTitleLength = this.questionTitle.trim().length === 0
+
+      if (invalidTitleLength) {
+        this.validationQuestionTitle = {
+          type: 'is-danger',
+          message: 'Please add a question'
+        }
+      } else {
+        this.$emit('on-click-add-question', {
+          action: this.isUpdating ? 'UPDATE' : 'ADD',
+          questionData: {
+            questionTitle: this.questionTitle,
+            questionType: this.questionType,
+            isRequired: this.isRequired,
+            questionConfig: this.questionConfig
+          },
+          questionIndex: this.updateQuestionIndex
+        })
+      }
+    },
+
+    onClickCancelButton() {
+      if (this.isUpdating) {
+        this.$emit(
+          'on-click-cancel-updating-this-question', this.updateQuestionIndex)
+      } else {
+        this.$emit('on-click-discard-this-question')
+      }
+    }
   },
 
   watch: {
-    questionType() {
-      this.questionConfig = {}
+    questionType(newValue) {
+      if (['SHORT', 'PARAG', 'DATE', 'TIME'].includes(newValue)) {
+        this.questionConfig = {}
+      }
     }
   }
 }

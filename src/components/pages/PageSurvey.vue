@@ -5,13 +5,13 @@
 
       <div class="column is-four-fifths" style="background: #fff; min-height: 100vh; padding: 24px;">
         <section>
-          <div class="title can-edit" contenteditable="true">
+          <!-- <div class="title can-edit" contenteditable="true">
             Untitled Survey
           </div>
 
           <div class="can-edit" contenteditable="true">
             Add a description ...
-          </div>
+          </div> -->
 
           <!-- <b-button
             type="is-dark"
@@ -32,9 +32,9 @@
         </div> -->
 
         <div>
-          <div style="font-size: 1.25em; margin-bottom: 24px;">
+          <!-- <div style="font-size: 1.25em; margin-bottom: 24px;">
             Questions ({{ questions.length }})
-          </div>
+          </div> -->
 
           <div
             v-for="(question, index) in questions"
@@ -48,7 +48,7 @@
               :update-question-type="question.questionType"
               :update-is-required="question.isRequired"
               :update-question-config="question.questionConfig"
-              @on-click-discard-this-question="isAddQuestionFormLoaded = false"
+              @on-click-cancel-updating-this-question="onClickCancelUpdatingQuestion"
               @on-click-add-question="addUpdateQuestion"
             />
 
@@ -123,6 +123,10 @@ export default {
 
     showUpdateQuestionForm(questionIndex) {
       this.questions[questionIndex]['isUpdating'] = true
+    },
+
+    onClickCancelUpdatingQuestion(questionIndex) {
+      this.questions[questionIndex]['isUpdating'] = false
     }
   }
 }
@@ -136,12 +140,16 @@ export default {
 }
 
 .add-new-question-button {
-  border: 1px solid gray;
+  border: 1px solid lightgray;
   display: flex;
   justify-content: center;
   padding: 24px;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
+}
+
+.add-new-question-button:hover {
+  background: #efefef;
 }
 
 .can-edit:hover {
