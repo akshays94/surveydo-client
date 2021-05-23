@@ -7,8 +7,20 @@
     </div>
     <div class="level-right">
       <div class="level-item">
-        AKSHAY S.
+        @{{ username }}
       </div>
     </div>
   </div>
 </template>
+
+<script>
+import Vuex from "vuex";
+
+export default {
+  computed: {
+    ...Vuex.mapGetters({
+      username: "getUsername",
+    }),
+  },
+};
+</script>

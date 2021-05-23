@@ -3,15 +3,26 @@
     <div class="columns">
       <SurveyMenu />
 
-      <div class="column is-four-fifths" style="background: #fff; min-height: 100vh; padding: 24px;">
-        <section>
-          <!-- <div class="title can-edit" contenteditable="true">
-            Untitled Survey
+      <div
+        class="column is-four-fifths"
+        style="background: #fff; min-height: 100vh; padding: 24px;"
+      >
+        <section style="margin-bottom: 24px;">
+          <div
+            class="title can-edit"
+            contenteditable="true"
+            @input="updateTitle"
+          >
+            {{ surveyTitle }}
           </div>
 
-          <div class="can-edit" contenteditable="true">
-            Add a description ...
-          </div> -->
+          <div
+            class="can-edit"
+            contenteditable="true"
+            @input="updateDescription"
+          >
+            {{ surveyDescription }}
+          </div>
 
           <!-- <b-button
             type="is-dark"
@@ -32,33 +43,32 @@
         </div> -->
 
         <div>
-          <!-- <div style="font-size: 1.25em; margin-bottom: 24px;">
-            Questions ({{ questions.length }})
-          </div> -->
+          <div style="font-size: 1.25em; margin-bottom: 24px;">
+            Questions ({{ surveyQuestions.length }})
+          </div>
 
-          <div
-            v-for="(question, index) in questions"
-            :key="question.id"
-          >
+          <div v-for="(question, index) in surveyQuestions" :key="question.id">
             <SurveyAddQuestion
               v-if="question.isUpdating"
               :is-updating="true"
               :update-question-index="index"
-              :update-question-title="question.questionTitle"
-              :update-question-type="question.questionType"
-              :update-is-required="question.isRequired"
-              :update-question-config="question.questionConfig"
-              @on-click-cancel-updating-this-question="onClickCancelUpdatingQuestion"
+              :update-question-title="question.question"
+              :update-question-type="question.question_type"
+              :update-is-required="question.is_required"
+              :update-question-config="question.configuration"
+              @on-click-cancel-updating-this-question="
+                onClickCancelUpdatingQuestion
+              "
               @on-click-add-question="addUpdateQuestion"
             />
 
             <SurveyQuestionItem
               v-else
               :question-index="index"
-              :question-title="question.questionTitle"
-              :question-type="question.questionType"
-              :is-required="question.isRequired"
-              :question-config="question.questionConfig"
+              :question-title="question.question"
+              :question-type="question.question_type"
+              :is-required="question.is_required"
+              :question-config="question.configuration"
               @on-click-update-question="showUpdateQuestionForm"
             />
           </div>
@@ -80,56 +90,111 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
-import Vue from 'vue'
+import Vue from "vue";
+import Vuex from "vuex";
+import { debounce } from "lodash";
 
-import SurveyMenu from '@/components/survey/SurveyMenu.vue'
-import SurveyAddQuestion from '@/components/survey/SurveyAddQuestion.vue'
-import SurveyQuestionItem from '@/components/survey/SurveyQuestionItem.vue'
+// import { updateSurveyTitleAPI } from "@/endpoints/survey";
+
+import SurveyMenu from "@/components/survey/SurveyMenu.vue";
+import SurveyAddQuestion from "@/components/survey/SurveyAddQuestion.vue";
+import SurveyQuestionItem from "@/components/survey/SurveyQuestionItem.vue";
 
 export default {
   components: {
     SurveyAddQuestion,
     SurveyMenu,
-    SurveyQuestionItem
+    SurveyQuestionItem,
   },
   data() {
     return {
+      surveyId: null,
+      isSurveyLoaded: false,
+
       isAddQuestionFormLoaded: false,
-      questions: []
+      questions: [],
+    };
+  },
+  computed: {
+    ...Vuex.mapGetters({
+      surveyTitle: "getSurveyTitle",
+      surveyDescription: "getSurveyDescription",
+      surveyQuestions: "getSurveyQuestions",
+    }),
+  },
+  created() {
+    this.isSurveyLoaded = false;
+    this.surveyId = this.$route.params.surveyId;
+    const result = this.surveyRetrieve(this.surveyId);
+    if (result.success) {
+      this.isSurveyLoaded = true;
     }
   },
   methods: {
-    addUpdateQuestion(payload) {
-      let questionData = payload.questionData
-      let questionIndex = payload.questionIndex
+    ...Vuex.mapActions([
+      "surveyRetrieve",
+      "surveyTitleUpdate",
+      "surveyDescriptionUpdate",
+      "surveyCreateQuestion",
+    ]),
+
+    updateTitle: debounce(async function(event) {
+      let updatedTitle = event.target.innerText;
+      updatedTitle = updatedTitle.trim();
+      if (updatedTitle) {
+        await this.surveyTitleUpdate({
+          surveyId: this.surveyId,
+          updatedTitle,
+        });
+      }
+    }, 1000),
+
+    updateDescription: debounce(async function(event) {
+      let updatedDescription = event.target.innerText;
+      updatedDescription = updatedDescription.trim();
+      if (updatedDescription) {
+        await this.surveyDescriptionUpdate({
+          surveyId: this.surveyId,
+          updatedDescription,
+        });
+      }
+    }, 1000),
+
+    async addUpdateQuestion(payload) {
+      let questionData = payload.questionData;
+      let questionIndex = payload.questionIndex;
 
       switch (payload.action) {
-        case 'ADD':
-          this.isAddQuestionFormLoaded = false
-          questionData.isUpdating = false
-          this.questions.push(questionData)
-          break
+        case "ADD":
+          this.isAddQuestionFormLoaded = false;
+          questionData.isUpdating = false;
 
-        case 'UPDATE':
-          questionData.isUpdating = false
-          Vue.set(this.questions, questionIndex, questionData)
-          break
+          // this.questions.push(questionData);
+          await this.surveyCreateQuestion({
+            surveyId: this.surveyId,
+            questionData,
+          });
+          break;
+
+        case "UPDATE":
+          questionData.isUpdating = false;
+          Vue.set(this.questions, questionIndex, questionData);
+          break;
       }
     },
 
     showUpdateQuestionForm(questionIndex) {
-      this.questions[questionIndex]['isUpdating'] = true
+      this.questions[questionIndex]["isUpdating"] = true;
     },
 
     onClickCancelUpdatingQuestion(questionIndex) {
-      this.questions[questionIndex]['isUpdating'] = false
-    }
-  }
-}
+      this.questions[questionIndex]["isUpdating"] = false;
+    },
+  },
+};
 </script>
 
 <style scoped>

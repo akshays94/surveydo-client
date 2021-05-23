@@ -213,10 +213,10 @@ export default {
         this.$emit('on-click-add-question', {
           action: this.isUpdating ? 'UPDATE' : 'ADD',
           questionData: {
-            questionTitle: this.questionTitle,
-            questionType: this.questionType,
-            isRequired: this.isRequired,
-            questionConfig: this.questionConfig
+            question: this.questionTitle,
+            question_type: this.questionType,
+            is_required: this.isRequired,
+            configuration: this.questionConfig
           },
           questionIndex: this.updateQuestionIndex
         })

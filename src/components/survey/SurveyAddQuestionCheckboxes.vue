@@ -19,7 +19,8 @@
           size="is-small"
           @click="removeOption(optionIndex)"
           :disabled="isRemoveOptionDisabled"
-        >Remove</b-button>
+          >Remove</b-button
+        >
       </div>
     </div>
 
@@ -37,11 +38,7 @@
       </div>
     </div>
 
-    <b-button
-      type="is-primary is-light"
-      size="is-small"
-      @click="addNewOption"
-    >
+    <b-button type="is-primary is-light" size="is-small" @click="addNewOption">
       Add Option
     </b-button>
   </section>
@@ -52,83 +49,79 @@ export default {
   props: {
     isUpdating: {
       type: Boolean,
-      required: false
+      required: false,
     },
     questionConfig: {
       type: Object,
-      required: false
-    }
+      required: false,
+    },
   },
 
   data() {
     return {
       isAddOther: false,
-      options: [
-        { id: 1, order: 1, title: 'Option 1' }
-      ]
-    }
+      options: [{ id: 1, order: 1, title: "Option 1" }],
+    };
   },
 
   computed: {
     isRemoveOptionDisabled() {
-      return this.options.length === 1
-    }
+      return this.options.length === 1;
+    },
   },
 
   created() {
     if (this.isUpdating) {
       if (Object.keys(this.questionConfig).length > 0) {
-        this.isAddOther = this.questionConfig.isAddOther
-        this.options = this.questionConfig.options
+        this.isAddOther = this.questionConfig.isAddOther;
+        this.options = this.questionConfig.options;
       } else {
-        this.isAddOther = false
-        this.options = [
-          { id: 1, order: 1, title: 'Option 1' }
-        ]
+        this.isAddOther = false;
+        this.options = [{ id: 1, order: 1, title: "Option 1" }];
       }
     }
-    this.emitCheckboxesOptions()
+    this.emitCheckboxesOptions();
   },
 
   methods: {
     addNewOption() {
-      const lastOption = this.options[this.options.length - 1]
-      const newID = lastOption.id + 1
-      const newOrder = lastOption.order + 1
+      const lastOption = this.options[this.options.length - 1];
+      const newID = lastOption.id + 1;
+      const newOrder = lastOption.order + 1;
       this.options.push({
         id: newID,
         order: newOrder,
-        title: `Option ${newOrder}`
-      })
-      this.emitCheckboxesOptions()
+        title: `Option ${newOrder}`,
+      });
+      this.emitCheckboxesOptions();
     },
 
     onChangeOptionTitle(newOptionTitle, optionIndex) {
-      this.options[optionIndex].title = newOptionTitle
-      this.emitCheckboxesOptions()
+      this.options[optionIndex].title = newOptionTitle;
+      this.emitCheckboxesOptions();
     },
 
     updateOrderValues() {
       for (let index = 0; index < this.options.length; index++) {
         const option = this.options[index];
-        option.order = index + 1
+        option.order = index + 1;
       }
     },
 
     removeOption(optionIndex) {
-      this.options.splice(optionIndex, 1)
-      this.updateOrderValues()
-      this.emitCheckboxesOptions()
+      this.options.splice(optionIndex, 1);
+      this.updateOrderValues();
+      this.emitCheckboxesOptions();
     },
 
     emitCheckboxesOptions() {
-      this.$emit('on-change-checkboxes-options', {
+      this.$emit("on-change-checkboxes-options", {
         options: this.options,
-        isAddOther: this.isAddOther
-      })
-    }
-  }
-}
+        isAddOther: this.isAddOther,
+      });
+    },
+  },
+};
 </script>
 
 <style scoped>

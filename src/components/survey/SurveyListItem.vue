@@ -1,7 +1,14 @@
 <template>
   <div class="item">
-    <div class="item--title">{{ surveyItem.title }}</div>
+    <router-link
+      class="item--title"
+      tag="div"
+      :to="{ name: 'PageSurvey', params: { surveyId: surveyItem.id } }"
+    >
+      {{ surveyItem.title }}
+    </router-link>
     <div class="item--description">{{ surveyItem.description }}</div>
+    <div class="item--description">{{ surveyItem.modified_on }}</div>
   </div>
 </template>
 
@@ -10,10 +17,10 @@ export default {
   props: {
     surveyItem: {
       type: Object,
-      required: true
-    }
-  }
-}
+      required: true,
+    },
+  },
+};
 </script>
 
 <style scoped>
