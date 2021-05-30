@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="columns">
-      <SurveyMenu />
+      <SurveyMenu :survey-id="surveyId" />
 
       <div
         class="column is-four-fifths"

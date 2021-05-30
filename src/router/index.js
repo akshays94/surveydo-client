@@ -8,6 +8,7 @@ import PageNotFound from "@/components/pages/PageNotFound.vue";
 import PageHome from "@/components/pages/PageHome.vue";
 import PageSurveyList from "@/components/pages/PageSurveyList.vue";
 import PageSurvey from "@/components/pages/PageSurvey.vue";
+import PagePreview from "@/components/pages/PagePreview.vue";
 
 Vue.use(VueRouter);
 
@@ -21,6 +22,7 @@ const routes = [
     ],
   },
   { path: "/login", name: "PageLogin", component: PageLogin },
+  { path: "/preview/:surveyId", name: "PagePreview", component: PagePreview },
   { path: "*", name: "PageNotFound", component: PageNotFound },
 ];
 

@@ -3,7 +3,7 @@
     <b-button type="is-text" style="margin-bottom: 4px;">
       Questions
     </b-button>
-    <b-button type="is-text" style="margin-bottom: 4px;">
+    <b-button type="is-text" style="margin-bottom: 4px;" @click="showPreview">
       Preview
     </b-button>
     <b-button type="is-text" style="margin-bottom: 4px;">
@@ -22,3 +22,23 @@
     </b-button>
   </div>
 </template>
+
+<script>
+export default {
+  props: {
+    surveyId: {
+      type: String,
+      required: true,
+    },
+  },
+  methods: {
+    showPreview() {
+      let routeData = this.$router.resolve({
+        name: "PagePreview",
+        params: { surveyId: this.surveyId },
+      });
+      window.open(routeData.href, "_blank");
+    },
+  },
+};
+</script>
