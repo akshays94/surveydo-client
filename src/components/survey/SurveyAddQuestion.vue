@@ -64,7 +64,7 @@
         <b-button
           type="is-success"
           size="is-small"
-          @click="emitAddQuestionData"
+          @click="emitAddUpdateQuestionData"
         >
           {{ isUpdating ? 'Update' : 'Add' }} this question
         </b-button>
@@ -104,6 +104,10 @@ export default {
       type: Number,
       required: false
     },
+    updateQuestionId: {
+      type: String,
+      required: false
+    },
     updateQuestionTitle: {
       type: String,
       required: false
@@ -130,8 +134,8 @@ export default {
         { code: 'MULTI', title: 'Multiple Choice' },
         { code: 'CHECK', title: 'Checkboxes' },
         { code: 'DROPD', title: 'Dropdown' },
-        { code: 'DATE', title: 'Date' },
-        { code: 'TIME', title: 'Time' },
+        // { code: 'DATE', title: 'Date' },
+        // { code: 'TIME', title: 'Time' },
       ],
       questionTitle: '',
       questionType: 'SHORT',
@@ -201,7 +205,7 @@ export default {
       }
     },
 
-    emitAddQuestionData() {
+    emitAddUpdateQuestionData() {
       const invalidTitleLength = this.questionTitle.trim().length === 0
 
       if (invalidTitleLength) {
@@ -210,8 +214,8 @@ export default {
           message: 'Please add a question'
         }
       } else {
-        this.$emit('on-click-add-question', {
-          action: this.isUpdating ? 'UPDATE' : 'ADD',
+        const questionData = {
+          action: 'ADD',
           questionData: {
             question: this.questionTitle,
             question_type: this.questionType,
@@ -219,7 +223,12 @@ export default {
             configuration: this.questionConfig
           },
           questionIndex: this.updateQuestionIndex
-        })
+        };
+        if (this.isUpdating) {
+          questionData['action'] = 'UPDATE';
+          questionData.questionData.id = this.updateQuestionId
+        }
+        this.$emit('on-click-add-or-update-question', questionData);
       }
     },
 

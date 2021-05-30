@@ -2,15 +2,6 @@
   <div style="background: #fff; padding: 24px; height: 100vh;">
     <BasePageTitle title="My Surveys" />
 
-    <!-- <b-button
-      tag="router-link"
-      :to="{ name: 'PageSurvey' }"
-      type="is-dark"
-      style="margin-bottom: 24px;"
-    >
-      Create a new survey
-    </b-button> -->
-
     <b-button
       type="is-dark"
       style="margin-bottom: 24px;"

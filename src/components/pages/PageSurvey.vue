@@ -23,28 +23,11 @@
           >
             {{ surveyDescription }}
           </div>
-
-          <!-- <b-button
-            type="is-dark"
-            size="is-small"
-            style="margin: 24px 0;"
-            :disabled="isAddQuestionFormLoaded"
-            @click="isAddQuestionFormLoaded = true"
-          >
-            Add question
-          </b-button> -->
         </section>
-
-        <!-- <div v-if="isAddQuestionFormLoaded">
-          <SurveyAddQuestion
-            @on-click-discard-this-question="isAddQuestionFormLoaded = false"
-            @on-click-add-question="addUpdateQuestion"
-          />
-        </div> -->
 
         <div>
           <div style="font-size: 1.25em; margin-bottom: 24px;">
-            Questions ({{ surveyQuestions.length }})
+            Questions ({{ surveyQuestions ? surveyQuestions.length : 0 }})
           </div>
 
           <div v-for="(question, index) in surveyQuestions" :key="question.id">
@@ -52,6 +35,7 @@
               v-if="question.isUpdating"
               :is-updating="true"
               :update-question-index="index"
+              :update-question-id="question.id"
               :update-question-title="question.question"
               :update-question-type="question.question_type"
               :update-is-required="question.is_required"
@@ -59,7 +43,7 @@
               @on-click-cancel-updating-this-question="
                 onClickCancelUpdatingQuestion
               "
-              @on-click-add-question="addUpdateQuestion"
+              @on-click-add-or-update-question="addUpdateQuestion"
             />
 
             <SurveyQuestionItem
@@ -70,13 +54,14 @@
               :is-required="question.is_required"
               :question-config="question.configuration"
               @on-click-update-question="showUpdateQuestionForm"
+              @on-click-delete-question="deleteQuestion(question.id)"
             />
           </div>
 
           <div v-if="isAddQuestionFormLoaded">
             <SurveyAddQuestion
               @on-click-discard-this-question="isAddQuestionFormLoaded = false"
-              @on-click-add-question="addUpdateQuestion"
+              @on-click-add-or-update-question="addUpdateQuestion"
             />
           </div>
           <div
@@ -93,11 +78,8 @@
 </template>
 
 <script>
-import Vue from "vue";
 import Vuex from "vuex";
 import { debounce } from "lodash";
-
-// import { updateSurveyTitleAPI } from "@/endpoints/survey";
 
 import SurveyMenu from "@/components/survey/SurveyMenu.vue";
 import SurveyAddQuestion from "@/components/survey/SurveyAddQuestion.vue";
@@ -113,9 +95,7 @@ export default {
     return {
       surveyId: null,
       isSurveyLoaded: false,
-
       isAddQuestionFormLoaded: false,
-      questions: [],
     };
   },
   computed: {
@@ -139,6 +119,9 @@ export default {
       "surveyTitleUpdate",
       "surveyDescriptionUpdate",
       "surveyCreateQuestion",
+      "surveyUpdateQuestion",
+      "surveyDeleteQuestion",
+      "enableQuestionUpdate",
     ]),
 
     updateTitle: debounce(async function(event) {
@@ -165,14 +148,13 @@ export default {
 
     async addUpdateQuestion(payload) {
       let questionData = payload.questionData;
-      let questionIndex = payload.questionIndex;
+      let questionId = payload.questionData.id;
 
       switch (payload.action) {
         case "ADD":
           this.isAddQuestionFormLoaded = false;
           questionData.isUpdating = false;
 
-          // this.questions.push(questionData);
           await this.surveyCreateQuestion({
             surveyId: this.surveyId,
             questionData,
@@ -181,18 +163,36 @@ export default {
 
         case "UPDATE":
           questionData.isUpdating = false;
-          Vue.set(this.questions, questionIndex, questionData);
+          delete questionData.id;
+
+          await this.surveyUpdateQuestion({
+            surveyId: this.surveyId,
+            questionId,
+            questionData,
+          });
           break;
       }
     },
 
     showUpdateQuestionForm(questionIndex) {
-      this.questions[questionIndex]["isUpdating"] = true;
+      this.enableQuestionUpdate({
+        questionIndex,
+        isEnable: true,
+      });
     },
 
     onClickCancelUpdatingQuestion(questionIndex) {
-      this.questions[questionIndex]["isUpdating"] = false;
+      this.enableQuestionUpdate({
+        questionIndex,
+        isEnable: false,
+      });
     },
+
+    deleteQuestion(questionId) {
+      if (window.confirm("Delete this question?")) {
+        this.surveyDeleteQuestion(questionId);
+      }
+    }
   },
 };
 </script>

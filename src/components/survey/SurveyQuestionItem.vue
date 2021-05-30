@@ -10,7 +10,7 @@
         </b-icon>
       </div>
 
-      <div>
+      <div @click="$emit('on-click-delete-question', questionIndex)">
         <b-icon
           class="item-box-actions--item"
           icon="trash-alt"
@@ -96,12 +96,6 @@
 
       </div>
     </div>
-
-    <!-- <b-button
-      type="is-danger is-light"
-      size="is-small"
-      @click="$emit('on-click-update-question', questionIndex)"
-    >Update</b-button> -->
   </section>
 </template>
 

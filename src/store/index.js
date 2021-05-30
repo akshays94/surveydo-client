@@ -7,6 +7,8 @@ import {
   updateSurveyTitleAPI,
   updateSurveyDescriptionAPI,
   createSurveyQuestionAPI,
+  updateSurveyQuestionAPI,
+  deleteSurveyQuestionAPI,
 } from "@/endpoints/survey";
 
 Vue.use(Vuex);
@@ -23,6 +25,7 @@ const getDefaultState = () => {
 
 export default new Vuex.Store({
   state: getDefaultState(),
+
   getters: {
     getUsername: (state) => (state.auth.user ? state.auth.user.username : ""),
     hasToken: (state) => state.auth.token !== null,
@@ -32,6 +35,7 @@ export default new Vuex.Store({
     getSurveyDescription: (state) => state.survey.description,
     getSurveyQuestions: (state) => state.survey.questions,
   },
+
   mutations: {
     SET_AUTH_TOKEN: (state, token) => {
       Vue.set(state.auth, "token", token);
@@ -40,6 +44,10 @@ export default new Vuex.Store({
       Vue.set(state.auth, "user", user);
     },
     SET_SURVEY: (state, survey) => {
+      for (let index = 0; index < survey.questions.length; index++) {
+        const question = survey.questions[index];
+        question.isUpdating = false;
+      }
       Vue.set(state, "survey", survey);
     },
     SET_SURVEY_TITLE: (state, updatedTitle) => {
@@ -49,9 +57,34 @@ export default new Vuex.Store({
       Vue.set(state.survey, "description", updatedTitle);
     },
     ADD_SURVEY_QUESTION: (state, payload) => {
+      payload.isUpdating = false;
       state.survey.questions.push(payload);
     },
+    UPDATE_SURVEY_QUESTION: (state, payload) => {
+      const { index, data } = payload;
+      const questions = [...state.survey.questions];
+      data.isUpdating = false;
+      questions[index] = data;
+      Vue.set(state.survey, "questions", questions);
+    },
+    DELETE_SURVEY_QUESTION: (state, questionID) => {
+      const questions = [...state.survey.questions];
+      const indexToBeDeleted = questions.findIndex(
+        (question) => question.id === questionID
+      );
+      if (indexToBeDeleted !== -1) {
+        questions.splice(indexToBeDeleted, 1);
+        Vue.set(state.survey, "questions", questions);
+      }
+    },
+    SET_ENABLE_QUESTION_UPDATE: (state, payload) => {
+      const { questionIndex, isEnable } = payload;
+      const questions = [...state.survey.questions];
+      questions[questionIndex].isUpdating = isEnable;
+      Vue.set(state.survey, "questions", questions);
+    },
   },
+
   actions: {
     async authLogin({ commit }, payload) {
       const { username, password } = payload;
@@ -114,10 +147,47 @@ export default new Vuex.Store({
       };
       const response = await createSurveyQuestionAPI(data);
       if (response.status === 201) {
-        commit("ADD_SURVEY_QUESTION", data);
+        const createdQuestion = response.data;
+        commit("ADD_SURVEY_QUESTION", createdQuestion);
         return { success: true };
       }
       return { success: false };
+    },
+
+    async surveyUpdateQuestion({ commit }, payload) {
+      const { surveyId, questionId, questionData } = payload;
+      const data = {
+        survey: surveyId,
+        ...questionData,
+      };
+      const response = await updateSurveyQuestionAPI(questionId, data);
+      if (response.status === 200) {
+        const updatedQuestion = response.data;
+        const indexToBeUpdated = updatedQuestion.order_no - 1;
+        commit("UPDATE_SURVEY_QUESTION", {
+          index: indexToBeUpdated,
+          data: updatedQuestion,
+        });
+        return { success: true };
+      }
+      return { success: false };
+    },
+
+    async surveyDeleteQuestion({ commit }, questionId) {
+      const response = await deleteSurveyQuestionAPI(questionId);
+      if (response.status === 204) {
+        commit("DELETE_SURVEY_QUESTION", questionId);
+        return { success: true };
+      }
+      return { success: false };
+    },
+
+    enableQuestionUpdate({ commit }, payload) {
+      const { questionIndex, isEnable } = payload;
+      commit("SET_ENABLE_QUESTION_UPDATE", {
+        questionIndex,
+        isEnable,
+      });
     },
   },
 });

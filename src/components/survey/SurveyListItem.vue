@@ -8,7 +8,7 @@
       {{ surveyItem.title }}
     </router-link>
     <div class="item--description">{{ surveyItem.description }}</div>
-    <div class="item--description">{{ surveyItem.modified_on }}</div>
+    <div class="item--description">Last updated on {{ formattedModifiedOn }}</div>
   </div>
 </template>
 
@@ -18,6 +18,16 @@ export default {
     surveyItem: {
       type: Object,
       required: true,
+    },
+  },
+  computed: {
+    formattedModifiedOn() {
+      let modifiedOn = this.surveyItem.modified_on;
+      modifiedOn = modifiedOn.slice(0, -5);
+      const formattedModifiedOn = new Date(modifiedOn + "Z");
+      return formattedModifiedOn.toLocaleString("en-IN", {
+        timeZone: "Asia/Kolkata",
+      });
     },
   },
 };

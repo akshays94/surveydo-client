@@ -16,3 +16,9 @@ export const updateSurveyDescriptionAPI = (surveyId, description) =>
 
 export const createSurveyQuestionAPI = (questionData) =>
   withAuthAxios.post(`/api/v1/questions/`, questionData);
+
+export const updateSurveyQuestionAPI = (questionID, questionData) =>
+  withAuthAxios.put(`/api/v1/questions/${questionID}/`, questionData);
+
+export const deleteSurveyQuestionAPI = (questionId) =>
+  withAuthAxios.delete(`/api/v1/questions/${questionId}/`);
