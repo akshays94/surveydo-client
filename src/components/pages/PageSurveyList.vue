@@ -1,14 +1,24 @@
 <template>
-  <div style="background: #fff; padding: 24px; height: 100vh;">
-    <BasePageTitle title="My Surveys" />
+  <div style="background: #fff; padding: 24px; height: 100%;">
 
-    <b-button
-      type="is-dark"
-      style="margin-bottom: 24px;"
-      @click="createNewSurvey()"
-    >
-      Create a new survey
-    </b-button>
+    <nav class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <BasePageTitle title="My Surveys" />
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+            <b-button
+              type="is-dark"
+              @click="createNewSurvey()"
+            >
+              Create a new survey
+            </b-button>
+        </div>
+      </div>
+    </nav>
+
 
     <SurveyListItem
       v-for="survey in surveys"

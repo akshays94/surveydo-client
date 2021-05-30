@@ -6,6 +6,7 @@ import {
   retrieveSurveyAPI,
   updateSurveyTitleAPI,
   updateSurveyDescriptionAPI,
+  updateSurveyCollectEmailAddressesAPI,
   createSurveyQuestionAPI,
   updateSurveyQuestionAPI,
   deleteSurveyQuestionAPI,
@@ -33,6 +34,8 @@ export default new Vuex.Store({
     getSurveyId: (state) => state.survey.id,
     getSurveyTitle: (state) => state.survey.title,
     getSurveyDescription: (state) => state.survey.description,
+    getSurveyIsCollectEmailAddresses: (state) =>
+      state.survey.is_collect_email_addresses,
     getSurveyQuestions: (state) => state.survey.questions,
   },
 
@@ -50,8 +53,19 @@ export default new Vuex.Store({
       }
       Vue.set(state, "survey", survey);
     },
+    RESET_SURVEY: (state) => Vue.set(state, "survey", {}),
     SET_SURVEY_TITLE: (state, updatedTitle) => {
       Vue.set(state.survey, "title", updatedTitle);
+    },
+    SET_SURVEY_IS_COLLECT_EMAIL_ADDRESSES: (
+      state,
+      updatedIsCollectEmailAddresses
+    ) => {
+      Vue.set(
+        state.survey,
+        "is_collect_email_addresses",
+        updatedIsCollectEmailAddresses
+      );
     },
     SET_SURVEY_DESCRIPTION: (state, updatedTitle) => {
       Vue.set(state.survey, "description", updatedTitle);
@@ -112,6 +126,7 @@ export default new Vuex.Store({
     },
 
     async surveyRetrieve({ commit }, surveyId) {
+      commit("RESET_SURVEY");
       const response = await retrieveSurveyAPI(surveyId);
       if (response.status === 200) {
         commit("SET_SURVEY", response.data);
@@ -180,6 +195,20 @@ export default new Vuex.Store({
         return { success: true };
       }
       return { success: false };
+    },
+
+    async surveyIsCollectEmailAddressesUpdate({ commit }, payload) {
+      const { surveyId, isCollectEmailAddresses } = payload;
+      const response = await updateSurveyCollectEmailAddressesAPI(
+        surveyId,
+        isCollectEmailAddresses
+      );
+      if (response.status === 200) {
+        commit(
+          "SET_SURVEY_IS_COLLECT_EMAIL_ADDRESSES",
+          isCollectEmailAddresses
+        );
+      }
     },
 
     enableQuestionUpdate({ commit }, payload) {

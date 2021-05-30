@@ -1,6 +1,6 @@
 <template>
   <section class="item-box">
-    <div class="item-box-actions">
+    <div class="item-box-actions" v-if="isShowActions">
       <div @click="$emit('on-click-update-question', questionIndex)">
         <b-icon
           class="item-box-actions--item"
@@ -121,6 +121,10 @@ export default {
     questionConfig: {
       type: Object,
       required: true
+    },
+    isShowActions: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -161,6 +165,7 @@ export default {
 
 .item-box--title {
   margin-bottom: 12px;
+  font-weight: bold;
 }
 
 .is-required {

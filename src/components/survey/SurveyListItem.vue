@@ -7,8 +7,10 @@
     >
       {{ surveyItem.title }}
     </router-link>
+    <div class="item--lastupdated">
+      Last updated on {{ formattedModifiedOn }}
+    </div>
     <div class="item--description">{{ surveyItem.description }}</div>
-    <div class="item--description">Last updated on {{ formattedModifiedOn }}</div>
   </div>
 </template>
 
@@ -42,9 +44,17 @@ export default {
 
 .item--title {
   font-size: 1.2em;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.item--lastupdated {
+  font-size: 0.9em;
+  color: rgb(54, 54, 54);
 }
 
 .item--description {
+  font-size: 0.9em;
   color: gray;
 }
 </style>

@@ -14,6 +14,14 @@ export const updateSurveyTitleAPI = (surveyId, title) =>
 export const updateSurveyDescriptionAPI = (surveyId, description) =>
   withAuthAxios.patch(`/api/v1/surveys/${surveyId}/partial/`, { description });
 
+export const updateSurveyCollectEmailAddressesAPI = (
+  surveyId,
+  is_collect_email_addresses
+) =>
+  withAuthAxios.patch(`/api/v1/surveys/${surveyId}/partial/`, {
+    is_collect_email_addresses,
+  });
+
 export const createSurveyQuestionAPI = (questionData) =>
   withAuthAxios.post(`/api/v1/questions/`, questionData);
 
