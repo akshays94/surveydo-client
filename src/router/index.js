@@ -9,6 +9,7 @@ import PageHome from "@/components/pages/PageHome.vue";
 import PageSurveyList from "@/components/pages/PageSurveyList.vue";
 import PageSurvey from "@/components/pages/PageSurvey.vue";
 import PagePreview from "@/components/pages/PagePreview.vue";
+import PageResponse from "@/components/pages/PageResponse.vue";
 
 Vue.use(VueRouter);
 
@@ -18,11 +19,16 @@ const routes = [
     component: PageHome,
     children: [
       { path: "/", name: "PageSurveyList", component: PageSurveyList },
-      { path: "/survey/:surveyId", name: "PageSurvey", component: PageSurvey },
+      { path: "/surveys/:surveyId", name: "PageSurvey", component: PageSurvey },
     ],
   },
   { path: "/login", name: "PageLogin", component: PageLogin },
   { path: "/preview/:surveyId", name: "PagePreview", component: PagePreview },
+  {
+    path: "/surveys/:surveyId/response",
+    name: "PageResponse",
+    component: PageResponse,
+  },
   { path: "*", name: "PageNotFound", component: PageNotFound },
 ];
 
