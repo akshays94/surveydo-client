@@ -25,7 +25,7 @@ const routes = [
   { path: "/login", name: "PageLogin", component: PageLogin },
   { path: "/preview/:surveyId", name: "PagePreview", component: PagePreview },
   {
-    path: "/surveys/:surveyId/response",
+    path: "/s/:surveyId",
     name: "PageResponse",
     component: PageResponse,
   },

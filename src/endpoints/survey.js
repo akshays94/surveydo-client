@@ -30,3 +30,6 @@ export const updateSurveyQuestionAPI = (questionID, questionData) =>
 
 export const deleteSurveyQuestionAPI = (questionId) =>
   withAuthAxios.delete(`/api/v1/questions/${questionId}/`);
+
+export const addSurveyResponseAPI = (surveyId, data) =>
+  withAuthAxios.post(`/api/v1/surveys/${surveyId}/add-response/`, data);

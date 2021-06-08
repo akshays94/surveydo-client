@@ -33,7 +33,7 @@
         />
       </div>
 
-      <b-button type="is-primary">Submit</b-button>
+      <b-button type="is-primary" @click="submitSurvey()">Submit</b-button>
     </div>
   </section>
 </template>
@@ -43,6 +43,8 @@ import { retrieveSurveyAPI } from "@/endpoints/survey";
 
 import BasePageTitle from "@/components/base/BasePageTitle.vue";
 import SurveyQuestionItem from "@/components/survey/SurveyQuestionItem.vue";
+
+import { addSurveyResponseAPI } from "@/endpoints/survey";
 
 export default {
   name: "PageResponse",
@@ -60,7 +62,7 @@ export default {
       isCollectEmailAddresses: false,
       questions: [],
 
-      emailAddress: "",
+      emailAddress: null,
       answerMap: {},
     };
   },
@@ -77,18 +79,41 @@ export default {
 
   methods: {
     onAnswerUpdate(answerPayload) {
-      const { answer, questionId, otherAnswer, questionType } = answerPayload;
+      let { answer, questionId, otherAnswer, questionType } = answerPayload;
+      if (!otherAnswer) otherAnswer = null;
+
       if (questionId === "EMAIL_ADDRESS") {
         this.emailAddress = answer;
       } else {
-        if (["MULTI", "CHECK"].includes(questionType)) {
+        if (questionType === "CHECK") {
+          const answers = answer.map((i) => i.title);
           this.answerMap[questionId] = {
-            answer,
-            otherAnswer,
+            answer: answers,
+            other: otherAnswer,
+          };
+        } else if (questionType === "MULTI") {
+          this.answerMap[questionId] = {
+            answer: [answer["title"]],
+            other: otherAnswer,
           };
         } else {
-          this.answerMap[questionId] = answer;
+          this.answerMap[questionId] = {
+            answer: [answer],
+            other: null,
+          };
         }
+      }
+    },
+
+    async submitSurvey() {
+      const data = {
+        email_address: this.emailAddress,
+        answers: this.answerMap,
+      };
+      console.log(data);
+      const response = await addSurveyResponseAPI(this.surveyId, data)
+      if (response.status === 204) {
+        alert('Response recorded ...')
       }
     },
   },

@@ -77,10 +77,14 @@
       </div>
 
       <div v-if="questionType === 'DROPD'">
-        <b-select placeholder="Select">
+        <b-select
+          placeholder="Select"
+          v-model="dropdownAnswer"
+          @input="dropdownAnswerChange"
+        >
           <option
             v-for="option in questionConfig.options"
-            :value="option.id"
+            :value="option.title"
             :key="option.id"
           >
             {{ option.title }}
@@ -146,6 +150,7 @@ export default {
       paragraphAnswer: "",
       mcqAnswer: {},
       checkboxAnswer: [],
+      dropdownAnswer: "",
       otherAnswer: "",
     };
   },
@@ -181,6 +186,14 @@ export default {
         answer: this.checkboxAnswer,
         questionId: this.questionId,
         otherAnswer: this.otherAnswer,
+        questionType: this.questionType,
+      });
+    },
+
+    dropdownAnswerChange() {
+      this.$emit("on-answer-update", {
+        answer: this.dropdownAnswer,
+        questionId: this.questionId,
         questionType: this.questionType,
       });
     },
